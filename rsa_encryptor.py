@@ -107,7 +107,7 @@ def decrypt(priv_key,c_text):
 
 def main():
 
-    # part 1: 
+    # part 1:Generate Public/Private Key for Alice
     print("RSA ENCRYPTOR/DECRYPTOR")
     print("*****************************************************")
  
@@ -176,6 +176,7 @@ def main():
  
     done = False
 
+    # Part 2: Encrypt Message using Alice's public key(e, n) and decrpyt using private key(d, n)
     # Bob receives open lock, locks message
     # Alice receives locked message from Bob and opens with her private key 
     while (done != True):
