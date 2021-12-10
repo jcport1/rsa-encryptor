@@ -21,7 +21,8 @@ def prime_check(a):
 '''CALCULATION OF GCD FOR 'e' CALCULATION.'''
 # solves what e is
 
-def egcd(e,r):
+# What is the difference between this and euclid? 
+def exponent_gcd(e,r):
     while(r!=0):
         # updates r becomes e & r
         e,r=r,e%r
@@ -29,7 +30,9 @@ def egcd(e,r):
         # r = e % r
     return e
  
-#Euclid's Algorithm
+# Euclid's Algorithm
+# The Euclidean algorithm is a method to compute the gcd of two non-zero integers, a and b. 
+# what is r? 
 def eugcd(e,r):
     for i in range(1,r):
         while(e!=0):
@@ -40,6 +43,8 @@ def eugcd(e,r):
             e=b
  
 #Extended Euclidean Algorithm
+# One of the uses of the Euclidean Algorithm is to find integer solutions to equations of the form ax + by = c. Given integers a, b, and c, this is solvable (for x and y inters) whenever the gcd(a, b) divides c. 
+# Recursive function
 def eea(a,b):
     if(a%b==0):
         return(b,0,1)
@@ -50,7 +55,8 @@ def eea(a,b):
         return(gcd,t,s)
  
 #Multiplicative Inverse
-def mult_inv(e,r):
+# why this one and where? for what
+def multiplicative_inverse(e,r):
     gcd,s,_=eea(e,r)
     if(gcd!=1):
         return None
@@ -66,43 +72,39 @@ def mult_inv(e,r):
 '''ENCRYPTION ALGORITHM.'''
 def encrypt(pub_key,n_text):
     e,n=pub_key
-    x=[]
-    m=0
+    encryption_output =[]
+    # for loop iteratates through message and encodes message from letters to numbers
+    # encrypts message using public exoponent and performing mod n
     for i in n_text:
-        if(i.isupper()):
-            m = ord(i)-65
+            # converts to Unicode               
+            m = ord(i)
+            #encrypts message()
             c=(m**e)%n
-            x.append(c)
-        elif(i.islower()):
-            # convers to ASIC
-            # capital letters different than 
-            # how to randomized?                
-            m= ord(i)-97
-            c=(m**e)%n
-            x.append(c)
-        elif(i.isspace()):
-            spc=400
-            x.append(400)
-    return x
+            # encrypted message appeneded to output list
+            encryption_output.append(c)
+    # returns encryption_ouput string
+    return encryption_output
      
  
 #Decryption
 '''DECRYPTION ALGORITHM'''
+# make variable namees more descriptive
 def decrypt(priv_key,c_text):
     d,n=priv_key
-    txt=c_text.split(',')
-    print("This is my value txt", txt, type(txt))
-    x=''
-    m=0
-    for i in txt:
-        if(i=='400'):
-            x+=' '
-        else:
-            m=(int(i)**d)%n
-            m+=65
-            c=chr(m)
-            x+=c
-    return x
+    cipher_text_list=c_text.split(',')
+    print("This is my value cipher_text_str", cipher_text_list, type(cipher_text_list))
+    # output string 
+    decrypt_message_output=''
+    # variable that we're using to store the vauee of each out our decrypted element
+  
+    for element in cipher_text_list:
+            # decrypt element(num) using d(trapdoor)
+            message_element=(int(element)**d)%n
+            #convert decrypted element to letter
+            c=chr(message_element)
+            #add decrypted element to output string
+            decrypt_message_output+=c
+    return decrypt_message_output
  
 
 def main():
@@ -131,15 +133,21 @@ def main():
     #RSA Modulus
     # n: Alice's public key 
     # find n which is equal to p * q
+    # why is this significant * 1 * we still need 
     '''CALCULATION OF RSA MODULUS 'n'.'''
     n = p * q
     print("RSA Modulus(n) is:",n)
  
     #Eulers Toitent / Phi(n)
+    # number of 1> coprimes less than that number
+    # phi(n): counts from 1> to n, returns numbers that are copprime with n (gcd is 1)     
+    # clarify if 1 is included? *************
+    # phi(n): phi(n) 
     # r is phi(n) = the product of (p-1) * (q-1)
     # to figure out phi(n) of a large number will take a while
+    # r = is the phi(n), whivh can be easily figured out because the phi of a prime mumber is simply = p - 1, etc.  
     '''CALCULATION OF EULERS TOITENT 'r'.'''
-    r= (p-1)*(q-1)
+    r = (p-1)*(q-1)
     print("Phi(n)/Eulers Toitent(r) is:",r)
     print("*****************************************************")
 
@@ -147,10 +155,13 @@ def main():
     #  Value Calculation
     # Two numbers that don't share any common factors beside one (Could be prime or nonprime?)
     # Why coprime?
+
     '''FINDS THE HIGHEST POSSIBLE VALUE OF 'e' BETWEEN 1 and 1000 THAT MAKES (e,r) COPRIME.'''
     # e becomes 1 at start of loop
+    # for number in range (1, 1000)
+    # egcd(num, phi(n)) == 1 
     for i in range(1,1000):
-        if(egcd(i,r)==1):
+        if(exponent_gcd(i,r)==1):
          e=i
     print("The value of e is:",e)
     print("*****************************************************")
@@ -162,7 +173,7 @@ def main():
     print("END OF THE STEPS USED TO ACHIEVE EUCLID'S ALGORITHM.")
     print("*****************************************************")
     print("EUCLID'S EXTENDED ALGORITHM:")
-    d = mult_inv(e,r)
+    d = multiplicative_inverse(e,r)
     print("END OF THE STEPS USED TO ACHIEVE THE VALUE OF 'd'.")
     print("The value of d is:",d)
     print("*****************************************************")
