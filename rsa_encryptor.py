@@ -19,21 +19,29 @@ def prime_check(a):
 
 #GCD
 '''CALCULATION OF GCD FOR 'e' CALCULATION.'''
-# solves what e is
-
-# What is the difference between this and euclid? 
-def exponent_gcd(e,r):
+# solves what e (public exponent) is going to be
+# by finding the high possible totient of r(phi(n))
+# essentially we are performing Phi(n) % some k 
+# the some k is going to be our publci exponent
+# k is going to be equal to the iteration number 
+def find_exponent_gcd(e,r):
+    print("This is e and r before while loop: ", e, " ", r)
+    # this function will until r = 0
+    # since we're setting r = e % mod r, if we get 0 then e % r has no remindrs
+    # e is being constantly  updated to equal what r is, so e is the reminder of e % r
     while(r!=0):
-        # updates r becomes e & r
+        # swap e and r simulteounsly by assiging multiple variables in one line
+        # otherwise if we change the value of e or r in sequence, then we can't swap
+        # could also use a temporary variable 
         e,r=r,e%r
-        # e = r 
-        # r = e % r
+        print("This is e: ", e, " and this is r: ", r)
+    print("This is my final e", e)
     return e
  
 # Euclid's Algorithm
 # The Euclidean algorithm is a method to compute the gcd of two non-zero integers, a and b. 
 # what is r? 
-def eugcd(e,r):
+def euclid_algo_gcd(e,r):
     for i in range(1,r):
         while(e!=0):
             a,b=r//e,r%e
@@ -43,21 +51,23 @@ def eugcd(e,r):
             e=b
  
 #Extended Euclidean Algorithm
-# One of the uses of the Euclidean Algorithm is to find integer solutions to equations of the form ax + by = c. Given integers a, b, and c, this is solvable (for x and y inters) whenever the gcd(a, b) divides c. 
+# One of the uses of the Euclidean Algorithm is to find integer solutions to equations of the form ax + by = c. 
+# Given integers a, b, and c, this is solvable (for x and y inters) whenever the gcd(a, b) divides c. 
 # Recursive function
-def eea(a,b):
+def extended_euclidean_algo(a,b):
     if(a%b==0):
         return(b,0,1)
     else:
-        gcd,s,t = eea(b,a%b)
+        gcd,s,t = extended_euclidean_algo(b,a%b)
         s = s-((a//b) * t)
         print("%d = %d*(%d) + (%d)*(%d)"%(gcd,a,t,s,b))
         return(gcd,t,s)
  
 #Multiplicative Inverse
 # why this one and where? for what
+#
 def multiplicative_inverse(e,r):
-    gcd,s,_=eea(e,r)
+    gcd,s,_=extended_euclidean_algo(e,r)
     if(gcd!=1):
         return None
     else:
@@ -90,6 +100,8 @@ def encrypt(pub_key,n_text):
 '''DECRYPTION ALGORITHM'''
 # make variable namees more descriptive
 def decrypt(priv_key,c_text):
+    # unpacks priv_key tuple
+    # assigns tuple variable to multiple variables
     d,n=priv_key
     cipher_text_list=c_text.split(',')
     print("This is my value cipher_text_str", cipher_text_list, type(cipher_text_list))
@@ -135,41 +147,59 @@ def main():
     # find n which is equal to p * q
     # why is this significant * 1 * we still need 
     '''CALCULATION OF RSA MODULUS 'n'.'''
+    # n is the modulous n 
     n = p * q
     print("RSA Modulus(n) is:",n)
  
-    #Eulers Toitent / Phi(n)
+    #Eulers Toitent is also known as Phi(n), so eulers_phi
     # number of 1> coprimes less than that number
-    # phi(n): counts from 1> to n, returns numbers that are copprime with n (gcd is 1)     
+    # phi(n): counts from 1> to n, returns numbers that are copprime with n (gcd is 1)
     # clarify if 1 is included? *************
     # phi(n): phi(n) 
     # r is phi(n) = the product of (p-1) * (q-1)
     # to figure out phi(n) of a large number will take a while
-    # r = is the phi(n), whivh can be easily figured out because the phi of a prime mumber is simply = p - 1, etc.  
+    # r = is the phi(n), which can be easily figured out because the phi of a prime mumber is simply = p - 1, etc.  
     '''CALCULATION OF EULERS TOITENT 'r'.'''
+    # r is also the product of the phi of modulus n (n)
+    # the phi(modulus n) tells us how many numbers are coprime with modulus n
+    # easy to figure out phi(modulus n) if we know what two prime numbers make up n
+
+    # **** Another important way to think about phi(n) is that its the number of integers k
+    # in range 1 <= k <= n for which the gcd(n, k) is 1
     r = (p-1)*(q-1)
     print("Phi(n)/Eulers Toitent(r) is:",r)
     print("*****************************************************")
 
-    #Calculating Alice's exponent which is part of the public key
-    #  Value Calculation
+    #Calculating Alice's exponent which is 2nd part of the public key
     # Two numbers that don't share any common factors beside one (Could be prime or nonprime?)
     # Why coprime?
 
     '''FINDS THE HIGHEST POSSIBLE VALUE OF 'e' BETWEEN 1 and 1000 THAT MAKES (e,r) COPRIME.'''
-    # e becomes 1 at start of loop
+    # e number (public exponent) is coprime with r (phi(n)) if the only gcd of both of them is 1, 
+    # thus we say e (public exponent) is coprime with n (modulus n)
+    # e is 1 at start of loop
     # for number in range (1, 1000)
-    # egcd(num, phi(n)) == 1 
-    for i in range(1,1000):
-        if(exponent_gcd(i,r)==1):
+
+    # exponent_gcd(num, phi(n)) == 1 
+    # the public exponenent is one of the the totatives of r (thus is it is coprime with r)
+    # we're looking for the highest possible totative value of r (phi(n))
+    # even if gcd(i, r) == 1, for loop forces operation to keep running for 1000 times
+    # so the final e we get is the high possible totative of r(phi(n))
+
+    # change back to range 1000
+    # test numbers: 19 and 29
+    for i in range(1,10):
+        if(find_exponent_gcd(i,r)==1):
          e=i
-    print("The value of e is:",e)
+
+    print("The value of our public exponent e is:",e)
     print("*****************************************************")
 
     #d, Private and Public Keys
     '''CALCULATION OF 'd', PRIVATE KEY, AND PUBLIC KEY.'''
     print("EUCLID'S ALGORITHM:")
-    eugcd(e,r)
+    # accepts paraments for public exponent and r(phi(n))
+    euclid_algo_gcd(e,r)
     print("END OF THE STEPS USED TO ACHIEVE EUCLID'S ALGORITHM.")
     print("*****************************************************")
     print("EUCLID'S EXTENDED ALGORITHM:")
@@ -177,9 +207,10 @@ def main():
     print("END OF THE STEPS USED TO ACHIEVE THE VALUE OF 'd'.")
     print("The value of d is:",d)
     print("*****************************************************")
-    # public, e, n 
+
+    # public, e, n, assigns both elements to a tuple
     public = (e,n)
-    # private key: alices: d, n
+    # private key: alices: d, n, assigns both elements to a tuple
     private = (d,n)
     print("Private Key is:",private)
     print("Public Key is:",public)
