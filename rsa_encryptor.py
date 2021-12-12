@@ -34,13 +34,13 @@ def find_exponent_gcd(e,r):
         # otherwise if we change the value of e or r in sequence, then we can't swap
         # could also use a temporary variable 
         e,r=r,e%r
-        print("This is e: ", e, " and this is r: ", r)
-    print("This is my final e", e)
+    #     print("This is e: ", e, " and this is r: ", r)
+    # print("This is my e which is the remainder of r mod num", e)
     return e
  
 # Euclid's Algorithm
 # The Euclidean algorithm is a method to compute the gcd of two non-zero integers, a and b. 
-# what is r? 
+# computing the gcd of the public exponent and modulus n which is r  
 def euclid_algo_gcd(e,r):
     for i in range(1,r):
         while(e!=0):
@@ -49,8 +49,9 @@ def euclid_algo_gcd(e,r):
                 print("%d = %d*(%d) + %d"%(r,a,e,b))
             r=e
             e=b
- 
+
 #Extended Euclidean Algorithm
+# find thes gcd of 2 integers
 # One of the uses of the Euclidean Algorithm is to find integer solutions to equations of the form ax + by = c. 
 # Given integers a, b, and c, this is solvable (for x and y inters) whenever the gcd(a, b) divides c. 
 # Recursive function
@@ -64,10 +65,19 @@ def extended_euclidean_algo(a,b):
         return(gcd,t,s)
  
 #Multiplicative Inverse
-# why this one and where? for what
-#
+# r = modulus number
+# the modular inverse of an integer e mod r is the value of d
+# such that ed = 1 mod r
+# isolates d which is = k * phi(n) + 1
+# another way to think about this is the muliplicative inverse
+# of an integer a mod n is an integer x such that x * a mod n = 1
+# we can use the eea to solve x * a + y * n = 1
+# uses successive quotients 
+# the inverse exists only if gcd(r, e)
 def multiplicative_inverse(e,r):
+
     gcd,s,_=extended_euclidean_algo(e,r)
+    print("This is gcd, s, _", gcd, s, _)
     if(gcd!=1):
         return None
     else:
@@ -121,7 +131,7 @@ def decrypt(priv_key,c_text):
 
 def main():
 
-    # part 1:Generate Public/Private Key for Alice
+    # Part 1:Generate Public/Private Key for Alice
     print("RSA ENCRYPTOR/DECRYPTOR")
     print("*****************************************************")
  
@@ -189,7 +199,12 @@ def main():
     # change back to range 1000
     # test numbers: 19 and 29
     for i in range(1,10):
+        # essentially we are performing our function is performing: Phi(n) % some k 
+        # the some k is going to be our public exponent
+        # k is going to be equal to the iteration number 
         if(find_exponent_gcd(i,r)==1):
+            # function returns final value of e after 10 iterations 
+            # where the gcd of some k and r is ===1
          e=i
 
     print("The value of our public exponent e is:",e)
@@ -199,10 +214,13 @@ def main():
     '''CALCULATION OF 'd', PRIVATE KEY, AND PUBLIC KEY.'''
     print("EUCLID'S ALGORITHM:")
     # accepts paraments for public exponent and r(phi(n))
+    # euclide algo is a way to compute the gcd of 2 integers
+    # this is an extra function 
     euclid_algo_gcd(e,r)
     print("END OF THE STEPS USED TO ACHIEVE EUCLID'S ALGORITHM.")
     print("*****************************************************")
     print("EUCLID'S EXTENDED ALGORITHM:")
+
     d = multiplicative_inverse(e,r)
     print("END OF THE STEPS USED TO ACHIEVE THE VALUE OF 'd'.")
     print("The value of d is:",d)
@@ -219,8 +237,8 @@ def main():
     done = False
 
     # Part 2: Encrypt Message using Alice's public key(e, n) and decrpyt using private key(d, n)
-    # Bob receives open lock, locks message
-    # Alice receives locked message from Bob and opens with her private key 
+    # Bob receives lock and then locks message. Send backs to Alice
+    # Finally, Alice receives locked message from Bob and opens with her private key 
     while (done != True):
         #Message
         message = input("What message would you like to encrypt? ")
